@@ -85,6 +85,8 @@ def build_analyze_bottlenecks_prompts(req: AnalyzeBottlenecksRequest) -> tuple[s
     system_prompt = (
         "Eres un experto en análisis de procesos y mejora continua. "
         "Analiza las métricas de los nodos del flujo e identifica cuellos de botella. "
+        "Cuando el campo 'expectedHours' esté presente, compara el tiempo real promedio con el tiempo esperado: "
+        "una desviación significativa (>50%) indica un cuello de botella más severo. "
         "Responde SOLO con JSON válido siguiendo exactamente el esquema solicitado."
     )
 
@@ -97,9 +99,10 @@ def build_analyze_bottlenecks_prompts(req: AnalyzeBottlenecksRequest) -> tuple[s
 
     user_prompt = (
         f"Política: {req.policyName}\n"
-        f"Métricas de nodos:\n{metrics_json}\n"
+        f"Métricas de nodos (avgDurationHours=tiempo real promedio, expectedHours=tiempo SLA esperado o null si no configurado):\n{metrics_json}\n"
         f"Idioma de respuesta: {req.language}\n\n"
         f"Niveles de severidad disponibles: {severity_levels}\n\n"
+        "Si expectedHours está presente, úsalo para evaluar si el nodo supera su SLA y ajusta la severidad.\n\n"
         "Devuelve un objeto JSON con esta estructura exacta:\n"
         "{\n"
         '  "bottlenecks": [\n'

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -7,6 +9,7 @@ class NodeMetric(BaseModel):
     nodeId: str
     label: str
     avgDurationHours: float
+    expectedHours: Optional[float] = None
     pendingTasks: int
     completedTasks: int
     cancelledTasks: int
