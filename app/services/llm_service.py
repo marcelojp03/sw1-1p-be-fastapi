@@ -27,7 +27,6 @@ async def call_llm(
     system_prompt: str,
     user_prompt: str,
     temperature: float = settings.TEMPERATURE,
-    max_tokens: int = settings.MAX_TOKENS,
 ) -> dict:
     """Call the LLM and return the parsed JSON response."""
     logger.info("call_llm: model=%s temperature=%s", settings.OPENAI_MODEL, temperature)
@@ -39,8 +38,15 @@ async def call_llm(
         ],
         response_format={"type": "json_object"},
         temperature=temperature,
-        max_tokens=max_tokens,
     )
     raw = response.choices[0].message.content or ""
-    logger.debug("call_llm: raw response: %s", raw[:300])
+    usage = response.usage
+    if usage:
+        logger.info(
+            "call_llm: tokens — prompt=%d completion=%d total=%d",
+            usage.prompt_tokens,
+            usage.completion_tokens,
+            usage.total_tokens,
+        )
+    logger.debug("call_llm: raw response: %s", raw[:500])
     return _extract_json(raw)

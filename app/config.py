@@ -14,15 +14,14 @@ class Settings(BaseSettings):
 
     # OpenAI
     OPENAI_API_KEY: str = ""
-    OPENAI_MODEL: str = "gpt-4.1-mini"
-    MAX_TOKENS: int = 800
-    TEMPERATURE: float = 0.7
+    OPENAI_MODEL: str = "gpt-5.4-mini"
+    TEMPERATURE: float = 0.3
 
     # Internal auth
     INTERNAL_API_KEY: str = "sw1-internal-secret"
 
     # Server
-    PORT: int = 8001
+    PORT: int = 8028
 
 
 settings = Settings()

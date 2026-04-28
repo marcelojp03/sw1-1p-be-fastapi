@@ -15,11 +15,17 @@ router = APIRouter()
 
 @router.post("/suggest-workflow", response_model=SuggestWorkflowResponse)
 async def suggest_workflow(req: SuggestWorkflowRequest) -> SuggestWorkflowResponse:
+    logger.info(
+        "[suggest-workflow] policy='%s' existingNodes=%d language=%s",
+        req.policyName,
+        len(req.existingNodes),
+        req.language,
+    )
     system_prompt, user_prompt = build_suggest_workflow_prompts(req)
     try:
         data = await call_llm(system_prompt, user_prompt, temperature=0)
     except Exception as exc:
-        logger.exception("suggest_workflow: LLM call failed")
+        logger.exception("[suggest-workflow] LLM call failed — policy='%s'", req.policyName)
         raise HTTPException(status_code=502, detail=f"LLM error: {exc}") from exc
 
     suggestions = data.get("suggestions", [])
@@ -36,4 +42,9 @@ async def suggest_workflow(req: SuggestWorkflowRequest) -> SuggestWorkflowRespon
             }
         )
 
+    logger.info(
+        "[suggest-workflow] OK — suggestions=%d transitions=%d",
+        len(suggestions),
+        len(transitions),
+    )
     return SuggestWorkflowResponse(suggestions=suggestions, suggestedTransitions=transitions)
