@@ -8,7 +8,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.middleware.auth_middleware import InternalKeyMiddleware
-from app.routers import analyze_bottlenecks, generate_diagram, suggest_form_fields, suggest_workflow
+from app.routers import (
+    analyze_bottlenecks,
+    convert_document,
+    fill_form,
+    generate_diagram,
+    identify_policy,
+    nl_report,
+    routing_predict,
+    suggest_form_fields,
+    suggest_workflow,
+    transcribe_audio,
+)
 
 logging.basicConfig(
     level=logging.DEBUG if settings.DEBUG else logging.INFO,
@@ -41,11 +52,19 @@ app.add_middleware(
 # Internal key authentication
 app.add_middleware(InternalKeyMiddleware)
 
-# Routers
+# Routers — Ciclo 1
 app.include_router(suggest_workflow.router, prefix="/api/ai")
 app.include_router(suggest_form_fields.router, prefix="/api/ai")
 app.include_router(analyze_bottlenecks.router, prefix="/api/ai")
 app.include_router(generate_diagram.router, prefix="/api/ai")
+
+# Routers — Ciclo 2
+app.include_router(convert_document.router, prefix="/api/ai")
+app.include_router(transcribe_audio.router, prefix="/api/ai")
+app.include_router(identify_policy.router, prefix="/api/ai")
+app.include_router(fill_form.router, prefix="/api/ai")
+app.include_router(nl_report.router, prefix="/api/ai")
+app.include_router(routing_predict.router, prefix="/api/ai")
 
 
 @app.get("/health")
