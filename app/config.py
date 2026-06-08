@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,6 +13,17 @@ class Settings(BaseSettings):
     APP_NAME: str = "sw1-be-fastapi"
     DEBUG: bool = False
 
+    @field_validator("DEBUG", mode="before")
+    @classmethod
+    def parse_debug_mode(cls, value: object) -> object:
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"release", "prod", "production"}:
+                return False
+            if normalized in {"debug", "dev", "development"}:
+                return True
+        return value
+
     # OpenAI
     OPENAI_API_KEY: str = ""
     OPENAI_MODEL: str = "gpt-5.4-mini"
@@ -22,6 +34,12 @@ class Settings(BaseSettings):
 
     # Server
     PORT: int = 8028
+
+    # Ciclo 2 — Routing model
+    ROUTING_MODEL_PATH: str = "/app/models/routing_model.h5"
+
+    # Ciclo 2 — Whisper model size (tiny, base, small, medium, large)
+    WHISPER_MODEL_SIZE: str = "base"
 
 
 settings = Settings()
