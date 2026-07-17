@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     # OpenAI
     OPENAI_API_KEY: str = ""
     OPENAI_MODEL: str = "gpt-5.4-mini"
+    OPENAI_BASE_URL: str = "https://api.openai.com/v1"
     TEMPERATURE: float = 0.3
 
     # Internal auth

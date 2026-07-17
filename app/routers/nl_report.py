@@ -95,11 +95,14 @@ async def nl_report(req: NlReportRequest) -> NlReportResponse:
         logger.exception("[nl-report] LLM call failed")
         raise HTTPException(status_code=502, detail=f"LLM error: {exc}") from exc
 
+    logger.info("[nl-report] LLM response: %s", json.dumps(data, default=str)[:500])
+
     pipeline = data.get("pipeline", [])
     description = data.get("description", req.query)
 
     # ── SECURITY: validate fields before returning ──
-    _validate_query_fields({"pipeline": pipeline})
+    for stage in pipeline:
+        _validate_query_fields(stage)
 
     logger.info("[nl-report] OK — pipeline stages=%d", len(pipeline))
 
